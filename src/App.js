@@ -1,10 +1,29 @@
+import { useState } from "react";
+
 function App() {
+  const [calc, setCalc] = useState("");
+  const [result, setResult] = useState("");
+
+  const opt = ["+", "-", "*", "/", "."];
+
+  const updateCalc = (value) => {
+    if ((opt.includes(value) && calc === "") || (opt.includes(value) && opt.includes(calc.slice(-1)))) {
+      return;
+    }
+
+    setCalc(calc + value);
+
+    if (!opt.includes(value)) {
+      setResult(eval(calc + value).toString());
+    }
+  };
+
   const createDigits = () => {
     const digits = [];
 
     for (let i = 1; i < 10; i++) {
       digits.push(
-        <button key={i} type="">
+        <button onClick={() => updateCalc(i.toString())} key={i} type="">
           {i}
         </button>
       );
@@ -13,25 +32,56 @@ function App() {
     return digits;
   };
 
+  const calculate = () => {
+    setCalc(eval(calc).toString());
+  };
+
+  const deleteLast = () => {
+    if (calc === "") {
+      return;
+    }
+
+    const value = calc.slice(0, -1);
+
+    setCalc(value);
+  };
+
   return (
     <div className="App">
       <div className="calculator">
         <div className="display">
-          <span>(0)</span> 0
+          {result ? <span>({result})</span> : ""}&nbsp;
+          {calc || "0"}
         </div>
         <div className="operators">
-          <button type="">/</button>
-          <button type="">*</button>
-          <button type="">+</button>
-          <button type="">-</button>
+          <button type="" onClick={() => updateCalc("/")}>
+            /
+          </button>
+          <button type="" onClick={() => updateCalc("*")}>
+            *
+          </button>
+          <button type="" onClick={() => updateCalc("+")}>
+            +
+          </button>
+          <button type="" onClick={() => updateCalc("-")}>
+            -
+          </button>
 
-          <button type="">DEL</button>
+          <button type="" onClick={deleteLast}>
+            DEL
+          </button>
         </div>
         <div className="digits">
           {createDigits()}
-          <button type="">0</button>
-          <button type="">.</button>
-          <button type="">=</button>
+          <button type="" onClick={() => updateCalc("0")}>
+            0
+          </button>
+          <button type="" onClick={() => updateCalc(".")}>
+            .
+          </button>
+          <button type="" onClick={calculate}>
+            =
+          </button>
         </div>
       </div>
     </div>
